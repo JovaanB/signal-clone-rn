@@ -59,7 +59,7 @@ const HomeScreen = ({ navigation }) => {
           }}
         >
           <TouchableOpacity activeOpacity={0.5}>
-            <SimpleLineIcons name="camera" size={18} color="black" />
+            <SimpleLineIcons name="camrecorder" size={18} color="black" />
           </TouchableOpacity>
 
           <TouchableOpacity
