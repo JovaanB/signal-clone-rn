@@ -1,56 +1,74 @@
 import React, { useLayoutEffect, useState } from "react";
-import { View, StyleSheet, KeyboardAvoidingView } from "react-native";
-import { Button, Input, Text } from "@rneui/base";
+import { StyleSheet, View, KeyboardAvoidingView } from "react-native";
+import { Button, Input, Text } from "react-native-elements";
 import { StatusBar } from "expo-status-bar";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "../firebase";
 
 const RegisterScreen = ({ navigation }) => {
-  const [name, setName] = useState("");
+  const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
-  const [profileUrl, setProfileUrl] = useState("");
   const [password, setPassword] = useState("");
-
-  const register = () => {};
+  const [imgurl, setImgurl] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerBackTitle: "Back to login",
+      headerBackTitle: "Back To Login",
     });
-  }, []);
+  }, [navigation]);
+
+  const register = () => {
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((authUser) => {
+        const user = authUser.user;
+        updateProfile(user, {
+          displayName: fullname,
+          photoURL: imgurl,
+        })
+          .then(() => console.log("Profile Updated!"))
+          .catch((error) => console.log(error.message));
+      })
+      .catch((error) => alert(error.message));
+  };
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
       <StatusBar style="light" />
-      <Text h3 style={{ marginBottom: 20 }}>
+
+      <Text h3 style={{ marginBottom: 50 }}>
         Create a signal account
       </Text>
+
       <View style={styles.inputContainer}>
         <Input
-          placeholder="Full Name"
+          placeholder="Fullname"
           autoFocus
           type="text"
-          value={name}
-          onChange={(text) => setName(text)}
+          value={fullname}
+          onChangeText={(text) => setFullname(text)}
         />
         <Input
           placeholder="Email"
-          autoFocus
           type="email"
           value={email}
-          onChange={(text) => setEmail(text)}
+          onChangeText={(text) => setEmail(text)}
         />
         <Input
           placeholder="Password"
           secureTextEntry
           type="password"
           value={password}
-          onChange={(text) => setPassword(text)}
+          onChangeText={(text) => setPassword(text)}
         />
         <Input
-          placeholder="Profile picture URL (optional)"
-          autoFocus
+          placeholder="Profile ImageURL (Optional)"
           type="text"
-          value={profileUrl}
-          onChange={(text) => setProfileUrl(text)}
+          value={imgurl}
+          onChangeText={(text) => setImgurl(text)}
           onSubmitEditing={register}
         />
       </View>
@@ -61,32 +79,31 @@ const RegisterScreen = ({ navigation }) => {
         onPress={register}
         title="Register"
       />
-      <Button
-        containerStyle={styles.button}
-        onPress={() => navigation.navigate("Login")}
-        type="outline"
-        title="Login"
-      />
+      <View style={{ height: 100 }} />
     </KeyboardAvoidingView>
   );
 };
 
+export default RegisterScreen;
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 10,
-    marginTop: -40,
-    backgroundColor: "white",
+  ImageDimension: {
+    width: 100,
+    height: 100,
   },
   inputContainer: {
     width: 300,
+    marginVertical: 10,
   },
   button: {
     width: 200,
     marginTop: 10,
   },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "white",
+  },
 });
-
-export default RegisterScreen;
